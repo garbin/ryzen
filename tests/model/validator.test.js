@@ -19,4 +19,9 @@ describe('model/validator', () => {
   test('inValid json should throw error', async () => {
     expect(validator.validate.bind(validator, { json: { title: '' } })).toThrowError(ValidationError)
   })
+  test('no schema should return directly', async () => {
+    const noSchemaValidator = new Validator()
+    const json = { title: 'title' }
+    expect(noSchemaValidator.validate({ json })).toEqual(json)
+  })
 })

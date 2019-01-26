@@ -75,6 +75,7 @@ describe('model/base', () => {
     const validator = Post.createValidator()
     expect(validator).toBeInstanceOf(Validator)
     expect(Object.keys(validator.schema)).toEqual(Object.keys(Post.validator))
+    expect(Object.keys(Post.relationMappings)).toEqual(Object.keys(Post.relations))
   })
   test('belongsToOne should generated correctly', () => {
     expect(Comment.relations).toHaveProperty('post.join.from', 'comments.post_id')

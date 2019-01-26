@@ -17,6 +17,9 @@
   "scripts": {
     "test": "standard ./lib && jest"
   },
+  "jest": {
+    "collectCoverage": true
+  },
   "repository": {
     "type": "git",
     "url": "ssh://git@dev.dianpu.io:30022/garbin/merry.git"
