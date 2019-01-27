@@ -23,6 +23,8 @@ test:
   tags: 
     - testing
   script:
-    - git checkout $CI_COMMIT_REF_NAME
     - npm --registry=https://registry.npm.taobao.org install 
     - npm test
+  only:
+    - master
+    - branches
