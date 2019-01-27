@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { Application, middlewares } = require('../../lib')
+const { Application } = require('../../lib')
 const { describe, expect, test, afterEach } = global
 describe('application', () => {
   let server
@@ -17,12 +17,4 @@ describe('application', () => {
     const response = await request(server).get('/?a[0]=1&a[1]=2&a[2]=3')
     expect(response.status).toBe(204)
   })
-  // test('restful presets should work', async () => {
-  //   const app = new Application()
-  //   app.use(middlewares.basic())
-  //   // app.use(middlewares.routers())
-  //   server = app.listen()
-  //   const response = await request(server).get('/')
-  //   expect(response.status).toBe(200)
-  // })
 })
