@@ -28,7 +28,9 @@
     "standard": "^12.0.1"
   },
   "scripts": {
-    "test": "standard ./lib && jest"
+    "test": "standard ./lib && npm run setup && jest",
+    "setup": "npm run knex migrate:rollback && npm run knex migrate:latest && npm run knex seed:run",
+    "knex": "NODE_ENV=test knex --knexfile ./tests/_lib/knex/knexfile.js"
   },
   "jest": {
     "collectCoverage": true
