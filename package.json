@@ -4,7 +4,10 @@
   "description": "",
   "main": "lib/index.js",
   "dependencies": {
+    "@koa/cors": "^2.2.3",
     "koa": "^2.6.2",
+    "koa-body": "^4.0.6",
+    "koa-logger": "^3.2.0",
     "koa-qs": "^2.0.0",
     "lodash": "^4.17.11",
     "objection": "^1.5.3",
