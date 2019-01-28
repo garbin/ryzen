@@ -42,7 +42,8 @@ app.use(middlewares.basic({ logger: false, error: { emit: true } }))
 const posts = router.restful(Post, router => {
   router.create()
   router.read({
-    list: { sortable: ['created_at'] }
+    sortable: ['created_at'],
+    searchable: ['title']
   })
   router.update()
   router.destroy()
