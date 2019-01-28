@@ -1,6 +1,6 @@
 const request = require('supertest')
 const knexConfig = require('../_lib/knex/knexfile')
-const { Application, Model, RESTfulRouter, middlewares } = require('../../lib')
+const { Application, Model, router, middlewares } = require('../../lib')
 const Knex = require('knex')
 const { string, number } = require('yup')
 const { describe, expect, test, afterEach } = global
@@ -47,11 +47,13 @@ describe('router', () => {
     knex = Knex(knexConfig)
     Model.knex(knex)
     app.use(middlewares.basic({ logger: false, error: { emit: true } }))
-    const comments = new RESTfulRouter(Comment)
-    comments.read()
-    const posts = new RESTfulRouter(Post)
-    posts.read()
-    posts.children(comments)
+    // const comments = router.restful(Comment, router => {
+    //   router.read()
+    // })
+    const posts = router.restful(Post, router => {
+      router.read()
+      // router.children(comments)
+    })
     app.use(middlewares.router(posts))
     server = app.listen()
     const response = await request(server).get('/posts')
