@@ -39,6 +39,12 @@ const app = new Application()
 const knex = Knex(knexConfig)
 Model.knex(knex)
 app.use(middlewares.basic({ logger: false, error: { emit: true } }))
+const comments = router.restful(Comment, router => {
+  router.create()
+  router.read()
+  router.update()
+  router.destroy()
+})
 const posts = router.restful(Post, router => {
   router.create()
   router.read({
@@ -47,12 +53,12 @@ const posts = router.restful(Post, router => {
   })
   router.update()
   router.destroy()
-})
+}).children(comments)
 app.use(middlewares.router(posts))
 const server = app.listen()
 module.exports = {
   server,
-  routers: { posts },
+  routers: { posts, comments },
   app,
   knex,
   models: { Post, Comment }
