@@ -1,7 +1,6 @@
 const casual = require('casual')
 const { first, last } = require('lodash')
 const { server, routers, knex } = require('../_lib/app')
-const { test, afterAll, expect } = global
 
 afterAll(() => { knex.destroy(); server.close() })
 test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, update, destroy }) => {

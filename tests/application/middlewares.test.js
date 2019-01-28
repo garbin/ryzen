@@ -2,7 +2,6 @@ const request = require('supertest')
 const path = require('path')
 const { ValidationError } = require('objection')
 const { Application, Router, middlewares } = require('../../lib')
-const { describe, expect, test, afterEach } = global
 describe('middlewares', () => {
   let server
   afterEach(() => {
@@ -56,21 +55,4 @@ describe('middlewares', () => {
     expect(res2.status).toBe(200)
     expect(res2.text).toBe('router2')
   })
-  // test('RESTful Application', async () => {
-  //   const app = new Application()
-  //   const router = new RESTfulRouter(Post)
-  //   const router = Router.restful(Post, router => {
-  //     router.create()
-  //     router.read.list()
-  //     router.read.item()
-  //     router.update()
-  //     router.destroy()
-  //   })
-  //   router.create()
-  //   router.read()
-  //   router.update()
-  //   router.destroy()
-  //   app.use(middlewares.basic({ logger: false, error: { emit: false } }))
-  //   app.use(middlewares.router(router))
-  // })
 })
