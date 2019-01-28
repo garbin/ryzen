@@ -1,63 +1,35 @@
-const request = require('supertest')
-const knexConfig = require('../_lib/knex/knexfile')
-const { Application, Model, router, middlewares } = require('../../lib')
-const Knex = require('knex')
-const { string, number } = require('yup')
-const { describe, expect, test, afterEach } = global
-describe('router', () => {
-  let server, knex
-  afterEach(() => {
-    server && server.close()
-    knex && knex.destroy()
-  })
-  class Comment extends Model {
-    static get tableName () {
-      return 'comments'
-    }
-    static get validator () {
-      return {
-        comment: string().required(),
-        post_id: number().integer().required()
-      }
-    }
-    static get relations () {
-      return {
-        post: this.belongsToOne(Post)
-      }
-    }
-  }
-  class Post extends Model {
-    static get tableName () {
-      return 'posts'
-    }
-    static get validator () {
-      return {
-        title: string().required(),
-        contents: string().required()
-      }
-    }
-    static get relations () {
-      return {
-        comments: this.hasMany(Comment)
-      }
-    }
-  }
-  test('restful', async () => {
-    const app = new Application()
-    knex = Knex(knexConfig)
-    Model.knex(knex)
-    app.use(middlewares.basic({ logger: false, error: { emit: true } }))
-    // const comments = router.restful(Comment, router => {
-    //   router.read()
-    // })
-    const posts = router.restful(Post, router => {
-      router.read()
-      // router.children(comments)
-    })
-    app.use(middlewares.router(posts))
-    server = app.listen()
-    const response = await request(server).get('/posts')
-    expect(response.status).toBe(200)
-    expect(response.body).toBeInstanceOf(Array)
-  })
+const casual = require('casual')
+const { server, routers, knex } = require('../_lib/app')
+const { test, afterAll, expect } = global
+
+afterAll(() => { knex.destroy(); server.close() })
+test.restful(server, routers.posts, tester => {
+  let item
+  tester.prepare({
+    title: casual.title,
+    contents: casual.text,
+    slug: casual.word
+  }, ctx => { item = ctx })
+  // tester.prepareEach(ctx => ({
+  //   title: casual.title,
+  //   contents: casual.text,
+  //   slug: casual.word
+  // }), ctx => {
+  //   item = ctx
+  // })
+  // test('item', () => {
+  //   expect(item).toBeInstanceOf(models.Post)
+  // })
+  tester.create(ctx => ({
+    title: casual.title,
+    contents: casual.text,
+    slug: `${casual.word}-${Math.random() * 10000}`
+  })).test()
+// tester.read.list().test()
+// tester.read.item(item).test()
+// tester.update(item, { title: 'updated' }).assert(res => {
+//   expect(res.status).toBe(202)
+//   expect(res.body.title).toBe('updated')
+// }).test()
+// tester.delete(item).test()
 })
