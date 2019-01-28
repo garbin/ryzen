@@ -21,6 +21,7 @@
     "objection": "^1.5.3",
     "pg": "^7.8.0",
     "pluralize": "^7.0.0",
+    "query-string": "^6.2.0",
     "supertest": "^3.4.2",
     "yup": "^0.26.10"
   },
@@ -36,7 +37,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "setupFilesAfterEnv": ["./lib/jest"],
+    "setupFilesAfterEnv": [
+      "./lib/jest"
+    ],
     "roots": [
       "./tests"
     ]

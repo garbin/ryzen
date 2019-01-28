@@ -41,7 +41,9 @@ Model.knex(knex)
 app.use(middlewares.basic({ logger: false, error: { emit: true } }))
 const posts = router.restful(Post, router => {
   router.create()
-  router.read()
+  router.read({
+    list: { sortable: ['created_at'] }
+  })
   router.update()
   router.destroy()
 })
