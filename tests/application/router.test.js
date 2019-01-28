@@ -3,7 +3,7 @@ const { server, routers, knex } = require('../_lib/app')
 const { test, afterAll, expect } = global
 
 afterAll(() => { knex.destroy(); server.close() })
-test.restful(server, routers.posts, ({ prepare, create, read }) => {
+test.restful(server, routers.posts, ({ prepare, create, read, update, destroy }) => {
   let item
   prepare({
     title: casual.title,
@@ -20,9 +20,9 @@ test.restful(server, routers.posts, ({ prepare, create, read }) => {
     expect(item).toBeInstanceOf(routers.posts.model)
   })
   read.item(() => item.id).test()
-// tester.update(item, { title: 'updated' }).assert(res => {
-//   expect(res.status).toBe(202)
-//   expect(res.body.title).toBe('updated')
-// }).test()
-// tester.delete(item).test()
+  update(() => item.id, { title: 'updated' }).assert(res => {
+    expect(res.status).toBe(202)
+    expect(res.body.title).toBe('updated')
+  }).test()
+  destroy(() => item.id).test()
 })
