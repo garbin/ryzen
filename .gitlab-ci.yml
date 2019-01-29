@@ -12,9 +12,19 @@ stages:
   - test
 test:
   image: node:latest
+  services:
+    - postgres:latest
+  variables:
+    POSTGRES_DB: merry_test
+    POSTGRES_USER: runner
+    POSTGRES_PASSWORD: ""
+    DATABASE_CONNECTION: postgres://runner:@postgres:5432/merry_test
   stage: test
   tags: 
     - testing
   script:
     - npm --registry=https://registry.npm.taobao.org install 
     - npm test
+  only:
+    - master
+    - branches

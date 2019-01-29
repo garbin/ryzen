@@ -1,7 +1,6 @@
 const { ValidationError } = require('objection')
 const { Validator } = require('../../lib/model')
 const { string } = require('yup')
-const { describe, test, expect } = global
 
 describe('model/validator', () => {
   const validator = new Validator({
