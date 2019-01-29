@@ -46,7 +46,7 @@ const posts = router.restful(Post, router => {
   })
   router.update()
   router.destroy()
-}).nested(Comment)
+}).child(Comment)
 app.use(middlewares.router(posts))
 const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
