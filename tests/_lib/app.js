@@ -1,7 +1,7 @@
 const knexConfig = require('../_lib/knex/knexfile')
 const { Application, Model, router, middlewares } = require('../../lib')
 const Knex = require('knex')
-const { string, number } = require('yup')
+const { string } = require('yup')
 class Comment extends Model {
   static get tableName () {
     return 'comments'
@@ -43,7 +43,7 @@ const comments = router.restful(Comment, router => {
   router.read()
   router.update()
   router.destroy()
-})
+}, true)
 const posts = router.restful(Post, router => {
   router.create()
   router.read({
@@ -54,7 +54,7 @@ const posts = router.restful(Post, router => {
   router.destroy()
 }).children(comments)
 app.use(middlewares.router(posts))
-const server = require.mail === module ? app.listen(8000, () => console.log('server started')) : app.listen()
+const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
   routers: { posts, comments },
