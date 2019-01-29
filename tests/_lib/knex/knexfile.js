@@ -12,7 +12,7 @@ module.exports = {
     host: 'localhost',
     user: 'postgres',
     password: '123456',
-    database: 'merry_test',
+    database: 'ryzens_test',
     charset: 'utf8'
   }
 }
