@@ -43,28 +43,15 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
 
   destroy(() => item.id).test()
 
-  // nested comments tests
-  describe('comments', ()=>{
-
-  })
-  // nested(() => {
-  //   let post
-  //   prepare({
-  //     title: casual.title,
-  //     contents: casual.text,
-  //     slug: casual.uuid
-  //   }, item => { post = item })
-  // }).child(routers.comments, ({prepare, prepareEach, create, read, update, destroy}) => {
-    // let comment
-    // prepareEach(() => ({
-    //   comment: casual.text
-    // }), item => {comment = item})
-    // create(ctx => ({
-    //   comment: casual.text
-    // })).test()
+  nested(() => post, routers.comments, ({prepare, prepareEach, create, read, update, destroy, nestedTest}) => {
+    let comment
+    // prepare({ comment: casual.text }, item => {comment = item})
+    prepareEach(() => ({comment: casual.text}), item => comment = item )
+    // create({ comment: casual.text }).test()
+    test('comments', ()=>{})
     // read.list().test()
-    // read.item().test()
-    // update(() => comment.id, {comment: 'updated comment'}).test()
-    // destroy(() => comment.id).test()
-  // })
+    // read.item(() => comment).test()
+    // update(() => comment, {comment: 'updated'}).test()
+    // destroy(() => comment).test()
+  })
 })

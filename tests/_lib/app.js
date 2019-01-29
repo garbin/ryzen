@@ -8,8 +8,7 @@ class Comment extends Model {
   }
   static get validator () {
     return {
-      comment: string().required(),
-      post_id: number().integer().required()
+      comment: string().required()
     }
   }
   static get relations () {
@@ -55,7 +54,7 @@ const posts = router.restful(Post, router => {
   router.destroy()
 }).children(comments)
 app.use(middlewares.router(posts))
-const server = app.listen()
+const server = require.mail === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
   routers: { posts, comments },
