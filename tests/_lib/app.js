@@ -1,5 +1,5 @@
 const knexConfig = require('../_lib/knex/knexfile')
-const { Application, Model, router, middlewares } = require('../../lib')
+const { Application, Model, router, middlewares, graphql: { presets, types, relay } } = require('../../lib')
 const Knex = require('knex')
 const { string } = require('yup')
 
@@ -56,6 +56,36 @@ class Post extends Model {
   }
 }
 
+const CommentType = new types.Object({
+  name: 'Comment',
+  fields: presets.model({
+    id: types.nonNull(types.ID),
+    title: types.string(),
+    content: types.string()
+  })
+})
+const PostType = new types.Object({
+  name: 'Post',
+  fields: presets.model({
+    id: types.nonNull(types.ID),
+    title: types.string(),
+    content: types.string(),
+    comments: types.list(CommentType, {
+      resolve: presets.batch.hasMany(Comment)
+    }),
+    test1: types.string(),
+    created_at: types.datetime(),
+    updated_at: types.datetime()
+  })
+})
+const SearchType = new types.Enum({
+  name: 'SearchType',
+  values: {
+    POST: { value: Post }
+  }
+})
+const PostConnection = relay.connection.create(PostType)
+
 const app = new Application()
 const knex = Knex(knexConfig)
 Model.knex(knex)
@@ -75,6 +105,7 @@ const posts = router.restful(Post, router => {
   router.destroy()
 }).child(Comment)
 app.use(middlewares.router(posts))
+// app.use(middlewares.graphql())
 const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
