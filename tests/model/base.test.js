@@ -1,6 +1,7 @@
 const { Validator } = require('objection')
 const { Base } = require('../../lib/model')
 const { string, number } = require('yup')
+const { describe, test, expect } = global
 
 describe('model/base', () => {
   class Category extends Base {
