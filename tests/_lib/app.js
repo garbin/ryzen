@@ -1,5 +1,5 @@
 const knexConfig = require('../_lib/knex/knexfile')
-const { Application, Model, router, middlewares, graphql: { presets, types, relay } } = require('../../lib')
+const { Application, Model, router, middlewares, graphql: { presets, types } } = require('../../lib')
 const Knex = require('knex')
 const { string } = require('yup')
 

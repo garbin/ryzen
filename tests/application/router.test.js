@@ -72,7 +72,7 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
   nested(() => post, routers.posts.children.comments, ({ prepare, prepareEach, create, read, update, destroy, nestedTest }) => {
     let comment
     // prepare({ comment: casual.text }, item => {comment = item})
-    prepareEach(() => ({ comment: casual.text }), item => comment = item)
+    prepareEach(() => ({ comment: casual.text }), item => { comment = item })
     create({ comment: casual.text }).test()
     read(() => comment.id)
     update(() => comment.id, { comment: 'updated' }).test()
