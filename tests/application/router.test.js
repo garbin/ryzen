@@ -4,7 +4,7 @@ const { server, routers, models, knex } = require('../_lib/app')
 const { afterAll, beforeAll, test, expect } = global
 
 afterAll(() => { knex.destroy(); server.close() })
-test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, update, destroy, nested }) => {
+test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read, update, destroy, nested }) => {
   let item, post, category
   const data = {
     title: 'Ryzen is Awesome',
@@ -25,6 +25,20 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
     contents: casual.text,
     slug: casual.uuid
   }), ctx => { item = ctx })
+
+  crud({
+    create: () => ({
+      title: casual.title,
+      contents: casual.text,
+      slug: casual.uuid
+    }),
+    read: () => item.id,
+    update: {
+      id: () => item.id,
+      data: { title: 'updated' }
+    },
+    destroy: () => item.id
+  })
 
   create(ctx => ({
     title: casual.title,
