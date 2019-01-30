@@ -1,6 +1,7 @@
 const casual = require('casual')
 const { first, last } = require('lodash')
 const { server, routers, models, knex } = require('../_lib/app')
+const { afterAll, beforeAll, test, expect } = global
 
 afterAll(() => { knex.destroy(); server.close() })
 test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, update, destroy, nested }) => {
@@ -9,7 +10,7 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
     title: 'Ryzen is Awesome',
     contents: 'Ryzen is Awesome',
     slug: casual.uuid,
-    status: 'public',
+    status: 'public'
   }
   beforeAll(async () => {
     category = await models.Category.query().insert({
@@ -46,7 +47,7 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
     expect(first(res.body).status).toBe('public')
   }).test('GET /posts with filters')
 
-  read.list().query(()=>({
+  read.list().query(() => ({
     sort: '-created_at',
     filters: { category_id: category.id }
   })).assert(res => {
@@ -68,13 +69,13 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, create, read, updat
 
   destroy(() => item.id).test()
 
-  nested(() => post, routers.posts.children.comments, ({prepare, prepareEach, create, read, update, destroy, nestedTest}) => {
+  nested(() => post, routers.posts.children.comments, ({ prepare, prepareEach, create, read, update, destroy, nestedTest }) => {
     let comment
     // prepare({ comment: casual.text }, item => {comment = item})
-    prepareEach(() => ({comment: casual.text}), item => comment = item )
+    prepareEach(() => ({ comment: casual.text }), item => comment = item)
     create({ comment: casual.text }).test()
     read(() => comment.id)
-    update(() => comment.id, {comment: 'updated'}).test()
+    update(() => comment.id, { comment: 'updated' }).test()
     destroy(() => comment.id).test()
   })
 })

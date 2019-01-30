@@ -1,5 +1,6 @@
 const request = require('supertest')
 const { Application } = require('../../lib')
+const { test, expect, describe, afterEach } = global
 
 describe('application', () => {
   let server
