@@ -105,7 +105,21 @@ const posts = router.restful(Post, router => {
   router.destroy()
 }).child(Comment)
 app.use(middlewares.router(posts))
-// app.use(middlewares.graphql())
+middlewares.graphql(app, {
+  schema: new types.Schema({
+    query: new types.Object({
+      name: 'Query',
+      fields: {
+        test: types.type(types.JSON, {
+          args: { input: types.json() },
+          resolve (root, { input }) {
+            return { field: 'field', input }
+          }
+        })
+      }
+    })
+  })
+})
 const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
