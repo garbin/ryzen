@@ -127,8 +127,10 @@ middlewares.graphql(app, {
               // }
             }
           })
+        }),
+        fetch: presets.fetch({
+          POST: types.type(PostType, { model: Post })
         })
-
       }
     })
   })

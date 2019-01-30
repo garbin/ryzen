@@ -23,6 +23,6 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.field).toBe('field')
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
-  query.search({ type: 'POST', fields: ['id', 'title', 'contents'] }).test()
-  // query.fetch({ type: 'Post' }).test()
+  query.search('POST', ['id', 'title', 'contents']).only.test()
+  query.fetch('POST', ['id', 'title', 'contents'], () => ({ id: post.id })).test()
 })
