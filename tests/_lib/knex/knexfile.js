@@ -7,7 +7,7 @@ module.exports = {
     directory: './seeds'
   },
   client: 'postgres',
-  // debug: true,
+  debug: true,
   connection: process.env.DATABASE_CONNECTION || {
     host: 'localhost',
     user: 'postgres',

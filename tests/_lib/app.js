@@ -60,8 +60,7 @@ const CommentType = new types.Object({
   name: 'Comment',
   fields: presets.model({
     id: types.nonNull(types.ID),
-    title: types.string(),
-    content: types.string()
+    comment: types.string()
   })
 })
 const PostType = new types.Object({
@@ -69,22 +68,14 @@ const PostType = new types.Object({
   fields: presets.model({
     id: types.nonNull(types.ID),
     title: types.string(),
-    content: types.string(),
+    contents: types.string(),
     comments: types.list(CommentType, {
       resolve: presets.batch.hasMany(Comment)
     }),
-    test1: types.string(),
     created_at: types.datetime(),
     updated_at: types.datetime()
   })
 })
-const SearchType = new types.Enum({
-  name: 'SearchType',
-  values: {
-    POST: { value: Post }
-  }
-})
-const PostConnection = relay.connection.create(PostType)
 
 const app = new Application()
 const knex = Knex(knexConfig)
@@ -115,7 +106,29 @@ middlewares.graphql(app, {
           resolve (root, { input }) {
             return { field: 'field', input }
           }
+        }),
+        search: presets.search({
+          POST: types.type(PostType, {
+            model: Post,
+            compose: resolver => async (root, args, ctx, info) => {
+              ctx.composed = true
+              const result = await resolver(root, args, ctx, info)
+              return result
+            },
+            resolveOptions: {
+              sortable: ['created_at', 'updated_at'],
+              searchable: ['title', 'content'],
+              filterable: ['status']
+              // ({ filter, filterBy, query }) => {
+              //   filter('status')
+              //   if (filterBy.tag) {
+              //     query.where('tags', 'like', `%\t${filterBy.tag}\t%`)
+              //   }
+              // }
+            }
+          })
         })
+
       }
     })
   })

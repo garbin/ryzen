@@ -1,5 +1,5 @@
 const casual = require('casual')
-const { first, last } = require('lodash')
+// const { first, last } = require('lodash')
 const { server, models, knex } = require('../_lib/app')
 const { beforeAll, afterAll, test, expect } = global
 afterAll(() => {
@@ -23,6 +23,6 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.field).toBe('field')
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
-  // query.search({ type: 'POST' }).test()
+  query.search({ type: 'POST', fields: ['id', 'title', 'contents'] }).test()
   // query.fetch({ type: 'Post' }).test()
 })
