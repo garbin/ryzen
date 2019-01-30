@@ -98,6 +98,14 @@ const posts = router.restful(Post, router => {
 app.use(middlewares.router(posts))
 middlewares.graphql(app, {
   schema: new types.Schema({
+    mutation: new types.Object({
+      name: 'Mutation',
+      fields: {
+        ...presets.mutation(PostType, {
+          model: Post
+        })
+      }
+    }),
     query: new types.Object({
       name: 'Query',
       fields: {

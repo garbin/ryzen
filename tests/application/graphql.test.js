@@ -7,7 +7,7 @@ afterAll(() => {
   knex.destroy()
 })
 test.graphql(server, '/graphql', ({ query, mutate }) => {
-  let post
+  let post = {}
   beforeAll(async () => {
     post = await models.Post.query().insert({ title: casual.title, contents: casual.text, slug: casual.uuid })
   })
@@ -23,6 +23,41 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.field).toBe('field')
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
-  query.search('POST', ['id', 'title', 'contents']).only.test()
+  query.search('POST', ['id', 'title', 'contents']).test()
   query.fetch('POST', ['id', 'title', 'contents'], () => ({ id: post.id })).test()
+  query(`
+    mutation ($input: JSON!){
+      createPost(input: $input) {
+        id
+        title
+      }
+    }
+  `, {
+    input: {
+      title: 'mutation',
+      contents: 'mutation'
+    }
+  }).assert(res => {
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveProperty('data.createPost.title', 'mutation')
+  }).test('basic mutation')
+  // mutate() equals to create, upadte, destroy
+  mutate.create('Post', {
+    input: {
+      title: 'mutate create',
+      contents: 'mutate create contents'
+    }
+  }).test()
+  mutate.update('Post', () => ({
+    id: post.id,
+    input: { title: 'mutate updated' }
+  })).test()
+  // mutate.remove('Post', () => ({
+  //   id: post.id
+  // })).test()
+  mutate('Post', {
+    create: { input: { title: 'graphql', contents: 'graphql' } },
+    update: () => ({ id: post.id, input: { title: 'update' } }),
+    remove: () => ({ id: post.id })
+  })
 })
