@@ -15,10 +15,10 @@ test:
   services:
     - postgres:latest
   variables:
-    POSTGRES_DB: merry_test
+    POSTGRES_DB: ryzens_test
     POSTGRES_USER: runner
     POSTGRES_PASSWORD: ""
-    DATABASE_CONNECTION: postgres://runner:@postgres:5432/merry_test
+    DATABASE_CONNECTION: postgres://runner:@postgres:5432/ryzens_test
   stage: test
   tags: 
     - testing
