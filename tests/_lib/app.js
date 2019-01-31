@@ -1,5 +1,6 @@
 const knexConfig = require('../_lib/knex/knexfile')
-const { Application, Model, router, middlewares, graphql: { presets, types } } = require('../../lib')
+const { Application, Model, router, middlewares, graphql } = require('../../lib')
+const { presets, types } = graphql
 const Knex = require('knex')
 const { string } = require('yup')
 
@@ -80,7 +81,7 @@ const PostType = new types.Object({
 const app = new Application()
 const knex = Knex(knexConfig)
 Model.knex(knex)
-app.use(middlewares.basic({ logger: false, error: { emit: true } }))
+app.use(middlewares.basic({ accessLogger: false, error: { emit: true } }))
 const posts = router.restful(Post, router => {
   router.create()
   router.read({
@@ -96,7 +97,7 @@ const posts = router.restful(Post, router => {
   router.destroy()
 }).child(Comment)
 app.use(middlewares.router(posts))
-middlewares.graphql(app, {
+graphql.server({
   schema: new types.Schema({
     mutation: new types.Object({
       name: 'Mutation',
@@ -142,7 +143,7 @@ middlewares.graphql(app, {
       }
     })
   })
-})
+}).applyMiddleware({ app, path: '/graphql' })
 const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
