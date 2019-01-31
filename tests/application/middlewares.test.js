@@ -2,7 +2,7 @@ const request = require('supertest')
 const path = require('path')
 const { ValidationError } = require('objection')
 const { Application, Router, middlewares } = require('../../lib')
-const { afterEach, descirbe, afterAll, beforeAll, test, expect } = global
+const { afterEach, describe, test, expect } = global
 
 describe('middlewares', () => {
   let server
@@ -10,12 +10,21 @@ describe('middlewares', () => {
     server && server.close()
   })
   test('basic', async () => {
+    const err = new ValidationError({ type: 'ModelValidation', message: 'Validation Error', data: {}, statusCode: 422 })
     const app = new Application()
-    app.use(middlewares.basic({ accessLogger: false, error: { emit: false } }))
+    app.use(async (ctx, next) => {
+      try {
+        await next()
+      } catch (e) {
+        expect(e).toEqual(err)
+      }
+    })
+    app.on('error', e => expect(e).toEqual(err))
+    app.use(middlewares.basic({ accessLogger: false, error: { emit: false, rethrow: true } }))
     app.use(async ctx => {
       expect(ctx.request.body.test).toBe('test')
       expect(ctx.request.files.file.name).toBe('upload.txt')
-      throw new ValidationError({ type: 'ModelValidation', message: 'Validation Error', data: {}, statusCode: 422 })
+      throw err
     })
     server = app.listen()
     const response = await request(server)
@@ -48,7 +57,7 @@ describe('middlewares', () => {
       ctx.body = 'router2'
     })
     app.use(middlewares.basic({ accessLogger: false, error: { emit: false } }))
-    app.use(middlewares.router([router1, router2]))
+    app.use(middlewares.router(router1, router2))
     server = app.listen()
     const res1 = await request(server).get('/router1')
     expect(res1.status).toBe(200)
