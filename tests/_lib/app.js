@@ -1,5 +1,6 @@
 const knexConfig = require('../_lib/knex/knexfile')
 const { Application, Model, router, middlewares, graphql } = require('../../lib')
+const assert = require('assert')
 const { presets, types } = graphql
 const Knex = require('knex')
 const { string } = require('yup')
@@ -83,7 +84,10 @@ const knex = Knex(knexConfig)
 Model.knex(knex)
 app.use(middlewares.basic({ accessLogger: false, error: { emit: true } }))
 const posts = router.restful(Post, router => {
-  router.create()
+  router.create(async (ctx, next) => {
+    assert(ctx.request.headers.customerheader === 'Test', 'CustomerHeader is requried')
+    await next()
+  })
   router.read({
     join: 'categories',
     sortable: ['created_at'],
@@ -96,7 +100,10 @@ const posts = router.restful(Post, router => {
   router.update()
   router.destroy()
 }).child(Comment)
-app.use(middlewares.router(posts))
+const categories = router.restful(Category, router => {
+  router.crud()
+})
+app.use(middlewares.router(posts, categories))
 graphql.server({
   schema: new types.Schema({
     mutation: new types.Object({
@@ -147,7 +154,7 @@ graphql.server({
 const server = require.main === module ? app.listen(8000, () => console.log('server started')) : app.listen()
 module.exports = {
   server,
-  routers: { posts },
+  routers: { posts, categories },
   app,
   knex,
   models: { Post, Comment, Category }

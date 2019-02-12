@@ -4,6 +4,16 @@ const { server, routers, models, knex } = require('../_lib/app')
 const { afterAll, beforeAll, test, expect } = global
 
 afterAll(() => { knex.destroy(); server.close() })
+test.restful(server, routers.categories, ({ prepareEach, crud }) => {
+  let item
+  prepareEach(() => ({ category_name: casual.name }), ctx => { item = ctx })
+  crud({
+    create: () => ({ category_name: casual.name }),
+    read: () => item.id,
+    update: { id: () => item.id, data: { category_name: 'updated' } },
+    destroy: () => item.id
+  })
+})
 test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read, update, destroy, nested }) => {
   let item, post, category
   const data = {
@@ -26,25 +36,13 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
     slug: casual.uuid
   }), ctx => { item = ctx })
 
-  crud({
-    create: () => ({
-      title: casual.title,
-      contents: casual.text,
-      slug: casual.uuid
-    }),
-    read: () => item.id,
-    update: {
-      id: () => item.id,
-      data: { title: 'updated' }
-    },
-    destroy: () => item.id
-  })
+  const middleware = req => req.set('CustomerHeader', 'Test')
 
   create(ctx => ({
     title: casual.title,
     contents: casual.text,
     slug: casual.uuid
-  })).test()
+  })).use(middleware).test()
 
   read.list().test()
 
