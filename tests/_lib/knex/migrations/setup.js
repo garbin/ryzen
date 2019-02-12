@@ -17,6 +17,7 @@ exports.up = function (knex, Promise) {
   }).createTable('categories', function (table) {
     table.increments('id').primary()
     table.string('category_name')
+    table.string('desc')
   }).createTable('category2post', function (table) {
     table.integer('category_id').references('id').inTable('categories')
     table.integer('post_id').references('id').inTable('posts')
