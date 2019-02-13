@@ -1,8 +1,15 @@
 const { Validator } = require('objection')
-const { Base } = require('../../lib/model')
+const Knex = require('knex')
 const { string, number } = require('yup')
-const { describe, test, expect } = global
+const { Base } = require('../../lib/model')
+const knexConfig = require('../_lib/knex/knexfile')
+const { afterAll, describe, test, expect } = global
 
+const knex = Knex(knexConfig)
+Base.knex(knex)
+afterAll(async () => {
+  await knex.destroy()
+})
 describe('model/base', () => {
   class Category extends Base {
     static get tableName () {
@@ -10,7 +17,7 @@ describe('model/base', () => {
     }
     static get validator () {
       return {
-        name: string().required()
+        category_name: string().required()
       }
     }
     static get relations () {
@@ -18,6 +25,7 @@ describe('model/base', () => {
         post: this.manyToMany(Post, { throughTable: 'post_2_category' })
       }
     }
+    static get timestamps () { return false }
   }
   class Comment extends Base {
     static get tableName () {
@@ -51,6 +59,7 @@ describe('model/base', () => {
       }
     }
   }
+
   class Post extends Base {
     static get tableName () {
       return 'posts'
@@ -94,5 +103,13 @@ describe('model/base', () => {
     expect(Post.relations).toHaveProperty('categories.join.through.from', 'post_2_category.post_id')
     expect(Post.relations).toHaveProperty('categories.join.through.to', 'post_2_category.category_id')
     expect(Post.relations).toHaveProperty('categories.join.to', 'categories.id')
+  })
+  test('upsert', async () => {
+    let cate = await Category.upsert({ category_name: 'not_exists' }, { category_name: 'not_exists', desc: 'desc' })
+    expect(cate.id).toBeGreaterThanOrEqual(1)
+    const old = cate.id
+    cate = await Category.upsert({ category_name: 'not_exists' }, { category_name: 'not_exists', desc: 'new desc' })
+    expect(cate.id).toEqual(old)
+    expect(cate.desc).toBe('new desc')
   })
 })

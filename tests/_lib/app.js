@@ -19,7 +19,7 @@ class Category extends Model {
       posts: this.manyToMany(Post, { throughTable: 'category2post' })
     }
   }
-  get timestamps () {
+  static get timestamps () {
     return false
   }
 }
