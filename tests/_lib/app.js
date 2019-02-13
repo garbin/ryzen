@@ -135,7 +135,7 @@ graphql.server({
             },
             resolveOptions: {
               sortable: ['created_at', 'updated_at'],
-              searchable: ['title', 'content'],
+              searchable: ['title', 'contents'],
               filterable: ['status']
               // ({ filter, filterBy, query }) => {
               //   filter('status')

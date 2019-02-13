@@ -6,12 +6,12 @@ afterAll(() => {
   knex.destroy()
 })
 test.graphql(server, '/graphql', ({ query, mutate }) => {
-  let post = {}
+  let post, removeablePost
   beforeAll(async () => {
-    post = await models.Post.query().insert({ title: casual.title, contents: casual.text, slug: casual.uuid })
+    post = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
     await post.$relatedQuery('comments').insert({ comment: '123' })
+    removeablePost = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
   })
-  // test('post', () => expect(post).toBeInstanceOf(models.Post))
   query(`
     query ($input: JSON!){
       test(input: $input)
@@ -24,9 +24,10 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
   query.search('POST', ['id', 'title', 'contents']).test()
+  query.search('POST', ['id', 'title', 'contents'], { keyword: '123' }, { keyword: 'String' }).test()
   query.fetch('POST', [
     'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] }
-  ], () => ({ id: post.id })).only.test()
+  ], () => ({ id: post.id })).test()
   query(`
     mutation ($input: JSON!){
       createPost(input: $input) {
@@ -53,13 +54,12 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
   mutate.update('Post', () => ({
     id: post.id,
     input: { title: 'mutate updated' }
-  })).test()
+  }), ['id', 'title']).test()
   // mutate.remove('Post', () => ({
   //   id: post.id
   // })).test()
   mutate('Post', {
     create: { input: { title: 'graphql', contents: 'graphql' } },
-    update: () => ({ id: post.id, input: { title: 'update' } }),
-    remove: () => ({ id: post.id })
+    remove: () => ({ id: removeablePost.id })
   })
 })
