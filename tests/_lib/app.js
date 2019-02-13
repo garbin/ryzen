@@ -1,7 +1,7 @@
 const knexConfig = require('../_lib/knex/knexfile')
 const { Application, Model, router, middlewares, graphql } = require('../../lib')
 const assert = require('assert')
-const { presets, types } = graphql
+const { presets, types, Loader } = graphql
 const Knex = require('knex')
 const { string } = require('yup')
 
@@ -105,6 +105,8 @@ const categories = router.restful(Category, router => {
 })
 app.use(middlewares.router(posts, categories))
 graphql.server({
+  context: ({ ctx }) => ({ loader: new Loader() }),
+  formatError: console.error,
   schema: new types.Schema({
     mutation: new types.Object({
       name: 'Mutation',

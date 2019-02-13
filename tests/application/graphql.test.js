@@ -1,5 +1,4 @@
 const casual = require('casual')
-// const { first, last } = require('lodash')
 const { server, models, knex } = require('../_lib/app')
 const { beforeAll, afterAll, test, expect } = global
 afterAll(() => {
@@ -10,6 +9,7 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
   let post = {}
   beforeAll(async () => {
     post = await models.Post.query().insert({ title: casual.title, contents: casual.text, slug: casual.uuid })
+    await post.$relatedQuery('comments').insert({ comment: '123' })
   })
   // test('post', () => expect(post).toBeInstanceOf(models.Post))
   query(`
@@ -24,7 +24,9 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
   query.search('POST', ['id', 'title', 'contents']).test()
-  query.fetch('POST', ['id', 'title', 'contents'], () => ({ id: post.id })).test()
+  query.fetch('POST', [
+    'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] }
+  ], () => ({ id: post.id })).only.test()
   query(`
     mutation ($input: JSON!){
       createPost(input: $input) {
