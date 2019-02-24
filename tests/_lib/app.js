@@ -35,7 +35,7 @@ class Comment extends Model {
   }
   static get relations () {
     return {
-      post: this.belongsToOne(Post)
+      post: this.belongsTo(Post)
     }
   }
 }
