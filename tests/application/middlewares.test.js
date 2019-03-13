@@ -27,11 +27,14 @@ describe('middlewares', () => {
       throw err
     })
     server = app.listen()
-    const response = await request(server)
-      .post('/upload')
-      .field('test', 'test')
-      .attach('file', path.resolve(__dirname, '../_lib/upload.txt'))
-    expect(response.status).toBe(422)
+    try {
+      await request(server)
+        .post('/upload')
+        .field('test', 'test')
+        .attach('file', path.resolve(__dirname, '../_lib/upload.txt'))
+    } catch (e) {
+      expect(e.response.status).toBe(422)
+    }
   })
   test('router', async () => {
     const app = new Application()
