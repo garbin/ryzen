@@ -23,6 +23,13 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.field).toBe('field')
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
+  query(`
+    query {
+      error
+    }
+  `).assert(res => {
+    expect(res.status).toBe(200)
+  }).test('basic error query')
   query.search('POST', ['id', 'title', 'contents']).test()
   query.search('POST', ['id', 'title', 'contents'], { keyword: '123' }, { keyword: 'String' }).test()
   query.fetch('POST', [
