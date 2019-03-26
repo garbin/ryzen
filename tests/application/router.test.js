@@ -60,6 +60,7 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
   }).test('GET /posts with filters')
 
   read.list().query(() => ({
+    join: 'categories',
     sort: '-created_at',
     filters: { category_id: category.id }
   })).assert(res => {
