@@ -22,7 +22,7 @@ describe('model/base', () => {
     }
     static get relations () {
       return {
-        post: this.manyToMany(Post, { throughTable: 'post_2_category' })
+        post: this.manyToMany(Post, { throughTable: 'category2post' })
       }
     }
     static get timestamps () { return false }
@@ -74,7 +74,7 @@ describe('model/base', () => {
       return {
         comments: this.hasMany(Comment),
         categories: this.manyToMany(Category, {
-          throughTable: 'post_2_category'
+          throughTable: 'category2post'
         }),
         signature: this.hasOne(Signature)
       }
@@ -100,8 +100,8 @@ describe('model/base', () => {
   })
   test('manyToMany should generated correctly', () => {
     expect(Post.relations).toHaveProperty('categories.join.from', 'posts.id')
-    expect(Post.relations).toHaveProperty('categories.join.through.from', 'post_2_category.post_id')
-    expect(Post.relations).toHaveProperty('categories.join.through.to', 'post_2_category.category_id')
+    expect(Post.relations).toHaveProperty('categories.join.through.from', 'category2post.post_id')
+    expect(Post.relations).toHaveProperty('categories.join.through.to', 'category2post.category_id')
     expect(Post.relations).toHaveProperty('categories.join.to', 'categories.id')
   })
   test('upsert', async () => {
