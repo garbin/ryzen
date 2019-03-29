@@ -8,7 +8,7 @@ afterAll(() => {
 test.graphql(server, '/graphql', ({ query, mutate }) => {
   let post, removeablePost
   beforeAll(async () => {
-    post = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
+    post = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid, status: 'public' })
     await post.$relatedQuery('comments').insert({ comment: '123' })
     removeablePost = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
   })
@@ -31,7 +31,7 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.status).toBe(200)
   }).test('basic error query')
   query.search('POST', ['id', 'title', 'contents']).test()
-  query.search('POST', ['id', 'title', 'contents'], { keyword: '123' }, { keyword: 'String' }).test()
+  query.search('POST', ['id', 'title', 'contents'], { keyword: '123', filterBy: { status: 'public' } }, { filterBy: 'JSON', keyword: 'String' }).test()
   query.fetch('POST', [
     'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] }
   ], () => ({ id: post.id })).test()
