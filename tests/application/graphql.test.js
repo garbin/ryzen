@@ -30,11 +30,16 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
   `).assert(res => {
     expect(res.status).toBe(200)
   }).test('basic error query')
-  query.search('POST', ['id', 'title', 'contents']).test()
-  query.search('POST', ['id', 'title', 'contents'], { keyword: '123', filterBy: { status: 'public' } }, { filterBy: 'JSON', keyword: 'String' }).test()
-  query.fetch('POST', [
-    'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] }
-  ], () => ({ id: post.id })).test()
+  query.search('POST', { fields: ['id', 'title', 'contents'] }).test()
+  query.search('POST', {
+    fields: ['id', 'title', 'contents'],
+    variables: { keyword: '123', filterBy: { status: 'public' } },
+    query: { filterBy: 'JSON', keyword: 'String' }
+  }).test()
+  query.fetch('POST', {
+    fields: [ 'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] } ],
+    variables: () => ({ id: post.id })
+  }).test()
   query(`
     mutation ($input: JSON!){
       createPost(input: $input) {
