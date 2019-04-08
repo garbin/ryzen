@@ -89,6 +89,7 @@ const posts = router.restful(Post, router => {
     await next()
   })
   router.read({
+    eager: ['[categories]'],
     join: 'categories',
     sortable: ['created_at'],
     searchable: ['title'],

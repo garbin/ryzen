@@ -51,6 +51,36 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
     expect(res.body).toBeInstanceOf(Array)
   }).test('GET /posts with sort')
 
+  read.list().query().assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query by default')
+
+  read.list().query(() => ({
+    eager: ['[categories]']
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query')
+
+  read.list().query(() => ({
+    eager: 'categories'
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query string param')
+
+  read.list().query(() => ({
+    eager: ['[categories]', {
+      categories: builder => {
+        builder.select('id')
+      }
+    }]
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories.name).toBe(undefined)
+  }).test('GET /posts with sub query with filter')
+
   read.list().query({
     sort: '-created_at',
     filters: { status: 'public' }
