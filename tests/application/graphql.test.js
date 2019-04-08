@@ -8,7 +8,7 @@ afterAll(() => {
 test.graphql(server, '/graphql', ({ query, mutate }) => {
   let post, removeablePost
   beforeAll(async () => {
-    post = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
+    post = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid, status: 'public' })
     await post.$relatedQuery('comments').insert({ comment: '123' })
     removeablePost = await models.Post.query().insert({ title: `123${casual.title}`, contents: casual.text, slug: casual.uuid })
   })
@@ -23,11 +23,23 @@ test.graphql(server, '/graphql', ({ query, mutate }) => {
     expect(res.body.data.test.field).toBe('field')
     expect(res.body.data.test.input).toEqual({ test: 'test' })
   }).test('basic query')
-  query.search('POST', ['id', 'title', 'contents']).test()
-  query.search('POST', ['id', 'title', 'contents'], { keyword: '123' }, { keyword: 'String' }).test()
-  query.fetch('POST', [
-    'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] }
-  ], () => ({ id: post.id })).test()
+  query(`
+    query {
+      error
+    }
+  `).assert(res => {
+    expect(res.status).toBe(200)
+  }).test('basic error query')
+  query.search('POST', { fields: ['id', 'title', 'contents'] }).test()
+  query.search('POST', {
+    fields: ['id', 'title', 'contents'],
+    variables: { keyword: '123', filterBy: { status: 'public' } },
+    query: { filterBy: 'JSON', keyword: 'String' }
+  }).test()
+  query.fetch('POST', {
+    fields: [ 'id', 'title', 'contents', { comments: ['__array__', 'id', 'comment'] } ],
+    variables: () => ({ id: post.id })
+  }).test()
   query(`
     mutation ($input: JSON!){
       createPost(input: $input) {

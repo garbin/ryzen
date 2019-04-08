@@ -126,6 +126,12 @@ graphql.server({
             return { field: 'field', input }
           }
         }),
+        error: types.type(types.JSON, {
+          args: { input: types.json() },
+          resolve (root, { input }) {
+            assert(false === true, 'Error')
+          }
+        }),
         search: presets.search({
           POST: types.type(PostType, {
             model: Post,
