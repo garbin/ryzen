@@ -105,6 +105,11 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
   }).test('GET /posts with sort')
   read.item(() => item.id).test()
 
+  read.item(() => item.id).query().assert(res => {
+    expect(res.status).toBe(200)
+    expect(res.body.categories).toBeInstanceOf(Array)
+  }).test('GET /posts get one item with sub query')
+
   update(() => item.id, { title: 'updated' }).assert(res => {
     expect(res.status).toBe(202)
     expect(res.body.title).toBe('updated')
