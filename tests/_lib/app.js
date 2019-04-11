@@ -92,7 +92,9 @@ const posts = router.restful(Post, router => {
     eager: ['[categories]'],
     join: 'categories',
     sortable: ['created_at'],
-    searchable: ['title'],
+    searchable: ({ search }) => {
+      search('title')
+    },
     filterable: ({ filter }) => {
       filter('status')
       filter('category_id')
@@ -109,8 +111,8 @@ graphql.server({
   context: ({ ctx }) => ({ loader: new Loader() }),
   // formatError: console.error,
   formatError: GraphQLError => {
-    console.error('ERROR:', error.originalError);
-    return error;
+    console.error('ERROR:', error.originalError)
+    return error
   },
   schema: new types.Schema({
     mutation: new types.Object({
