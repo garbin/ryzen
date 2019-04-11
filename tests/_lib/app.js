@@ -92,8 +92,15 @@ const posts = router.restful(Post, router => {
     eager: ['[categories]'],
     join: 'categories',
     sortable: ['created_at'],
-    searchable: ({ search }) => {
+    searchable: ({ search, knex }) => {
       search('title')
+      search('contents', null, true) // true will make orWhere
+      /*
+       equals
+       search('title', (keywords, like, query) => {
+         query.where('title', like, `%${keywords}%`)
+       })
+       */
     },
     filterable: ({ filter }) => {
       filter('status')
