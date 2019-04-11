@@ -51,6 +51,36 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
     expect(res.body).toBeInstanceOf(Array)
   }).test('GET /posts with sort')
 
+  read.list().query().assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query by default')
+
+  read.list().query(() => ({
+    eager: ['[categories]']
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query')
+
+  read.list().query(() => ({
+    eager: 'categories'
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories).toBeInstanceOf(Array)
+  }).test('GET /posts with sub query string param')
+
+  read.list().query(() => ({
+    eager: ['[categories]', {
+      categories: builder => {
+        builder.select('id')
+      }
+    }]
+  })).assert(res => {
+    expect(res.status).toBe(200)
+    expect(first(res.body).categories.name).toBe(undefined)
+  }).test('GET /posts with sub query with filter')
+
   read.list().query({
     sort: '-created_at',
     filters: { status: 'public' }
@@ -74,6 +104,11 @@ test.restful(server, routers.posts, ({ prepare, prepareEach, crud, create, read,
     expect(last(res.body).title).toBe(data.title)
   }).test('GET /posts with sort')
   read.item(() => item.id).test()
+
+  read.item(() => item.id).query().assert(res => {
+    expect(res.status).toBe(200)
+    expect(res.body.categories).toBeInstanceOf(Array)
+  }).test('GET /posts get one item with sub query')
 
   update(() => item.id, { title: 'updated' }).assert(res => {
     expect(res.status).toBe(202)
