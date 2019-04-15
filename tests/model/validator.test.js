@@ -8,6 +8,14 @@ describe('model/validator', () => {
     title: string().min(3).required(),
     contents: string().required()
   })
+  const validatorWithGrammarMistake = new Validator({
+    title: string().min(3).required(),
+    contents: string().when('title', (title, schema) => {
+      if (title === 'hello') {
+        schema.notExistMethod().required()
+      }
+    })
+  })
   test('valid json should be passed', async () => {
     const json = { title: 'title', contents: 'contents' }
     expect(validator.validate({ json })).toEqual(json)
@@ -23,5 +31,15 @@ describe('model/validator', () => {
     const noSchemaValidator = new Validator()
     const json = { title: 'title' }
     expect(noSchemaValidator.validate({ json })).toEqual(json)
+  })
+  test('Grammar mistakes should throw specific error', async () => {
+    expect(() => {
+      validatorWithGrammarMistake.validate({
+        json: {
+          title: 'hello',
+          contents: 'world'
+        }
+      })
+    }).toThrowError(TypeError)
   })
 })
