@@ -13,7 +13,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.0",
     "http-errors": "^1.7.2",
-    "knex": "^0.16.5",
+    "knex": "^2.4.0",
     "koa": "^2.7.0",
     "koa-body": "^4.1.0",
     "koa-convert": "^1.2.0",
